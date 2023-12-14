@@ -1,0 +1,524 @@
+---
+title: "final project EDA"
+author: "Peijin Li"
+date: "2023-05-02"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library('igraph')
+library('ggplot2')
+library(ggplot2)
+library(readxl)
+require("statnet")
+require("ergm")
+require("intergraph")
+require("netseg")
+```
+
+```{r, warning=FALSE, include=FALSE}
+dataFacebook <- read_excel("Facebook_Data.xlsx")
+#dataInstagram <- read_excel("Instagram_Data.xlsx")
+#dataTwitter <- read_excel("Twitter_Data.xlsx")
+UserNodes <- dataFacebook[,c(1:1)]
+names(UserNodes)<-c('V1')  
+```
+
+```{r}
+#Load Network Edgelist from .csv
+Facebook_matrix <- read.csv("Facebook_Data.csv", skip=1, header=FALSE)
+Facebook_matrix <- as.matrix(Facebook_matrix)
+FacebookNetwork <- graph_from_adjacency_matrix(Facebook_matrix, mode = "undirected")
+```
+
+```{r}
+#Load Network Edgelist from .csv
+Instagram_matrix <- read.csv("Instagram_Data.csv", skip=1, header=FALSE)
+Instagram_matrix <- as.matrix(Instagram_matrix)
+InstagramNetwork <- graph_from_adjacency_matrix(Instagram_matrix, mode = "undirected")
+```
+
+```{r}
+Twitter_matrix <- read.csv("Twitter_Data.csv", skip=1, header=FALSE)
+Twitter_matrix <- as.matrix(Twitter_matrix)
+TwitterNetwork <- graph_from_adjacency_matrix(Twitter_matrix, mode = "undirected")
+```
+
+
+Calculate each of the following for each network:
+1.Average degree
+2.Density (state whether you are calculating for directed or undirected for each data set)
+3.Number of components
+4.Degree distribution (show in plot)
+5.Diameter of Largest Component
+
+```{r}
+# Check the number of vertices and edges
+vcount(FacebookNetwork)
+ecount(FacebookNetwork)
+ecount(InstagramNetwork)
+ecount(TwitterNetwork)
+```
+
+```{r}
+# Check the diameter
+diameter(FacebookNetwork)
+diameter(InstagramNetwork)
+diameter(TwitterNetwork)
+```
+```{r}
+# Check the clustering coefficient
+transitivity(FacebookNetwork)
+transitivity(InstagramNetwork)
+transitivity(TwitterNetwork)
+```
+
+
+
+```{r}
+avg_degree_F <- mean(igraph::degree(FacebookNetwork))
+# Print the result
+cat("The average degree of FacebookNetwork is", avg_degree_F)
+
+avg_degree_F <- mean(igraph::degree(InstagramNetwork))
+# Print the result
+cat("The average degree of InstagramNetwork is", avg_degree_F)
+
+avg_degree_F <- mean(igraph::degree(TwitterNetwork))
+# Print the result
+cat("The average degree of TwitterNetwork is", avg_degree_F)
+```
+
+```{r}
+#The density of a graph is the ratio of the number of edges and the number of possible edges.
+# It is undirected density
+density_F <- edge_density(FacebookNetwork, loops = FALSE)
+# Print the result
+cat("The density of FacebookNetwork is", density_F)
+
+density_F <- edge_density(InstagramNetwork, loops = FALSE)
+# Print the result
+cat("The density of InstagramNetwork is", density_F)
+
+density_F <- edge_density(TwitterNetwork, loops = FALSE)
+# Print the result
+cat("The density of TwitterNetwork is", density_F)
+```
+
+```{r}
+count_components_F <- count_components(FacebookNetwork)
+# Print the result
+cat("The number of components of FacebookNetwork is", count_components_F)
+
+count_components_F <- count_components(InstagramNetwork)
+# Print the result
+cat("The number of components of InstagramNetwork is", count_components_F)
+
+count_components_F <- count_components(TwitterNetwork)
+# Print the result
+cat("The number of components of TwitterNetwork is", count_components_F)
+```
+
+```{r}
+#degree_distribution(FlorentineNetwork)
+## plot the degree_distribution
+t1= table(degree(FacebookNetwork))
+relafreq_1 <- t1/sum(t1)
+barplot(relafreq_1, xlab = "Degree", ylab = "Relative frequencies", 
+        main = "Degree Distribution of FacebookNetwork",
+        col = "plum",
+        ylim = c(0, max(relafreq_1)))
+```
+
+```{r}
+t1= table(degree(InstagramNetwork))
+relafreq_1 <- t1/sum(t1)
+barplot(relafreq_1, xlab = "Degree", ylab = "Relative frequencies", 
+        main = "Degree Distribution of InstagramNetwork",
+        col = "plum",
+        ylim = c(0, max(relafreq_1)))
+```
+
+```{r}
+t1= table(degree(TwitterNetwork))
+relafreq_1 <- t1/sum(t1)
+barplot(relafreq_1, xlab = "Degree", ylab = "Relative frequencies", 
+        main = "Degree Distribution of TwitterNetwork",
+        col = "plum",
+        ylim = c(0, max(relafreq_1)))
+```
+
+
+```{r}
+#pak::pkg_install("fangzhou-xie/rethnicity")
+```
+
+
+```{r}
+# Print the result
+diameter_F <- diameter(FacebookNetwork)
+cat("The diameter of largest component of FacebookNetwork is", diameter_F)
+
+diameter_F <- diameter(InstagramNetwork)
+cat("The diameter of largest component of FacebookNetwork is", diameter_F)
+
+diameter_F <- diameter(TwitterNetwork)
+cat("The diameter of largest component of FacebookNetwork is", diameter_F)
+```
+
+#####################################################################################################################################
+Centrality Analysis 
+########################################################
+1.What member has the highest level of betweenness centrality?
+2.Show a correlation (scatter) plot of betweenness centrality and degree centrality.
+3.In 1-2 sentences, describe why (and if) the highest betweenness node might be important to the overall graph structure.
+```{r}
+# Calculate the betweenness centrality
+bc0 <- igraph::betweenness(FacebookNetwork)
+
+# Find the member with the highest betweenness centrality
+highest_bc_member0 <- which.max(bc0)
+
+# Print the result
+cat("The member with the highest betweenness centrality is", highest_bc_member0)
+
+
+# Calculate the betweenness centrality
+bc1 <- igraph::betweenness(InstagramNetwork)
+
+# Find the member with the highest betweenness centrality
+highest_bc_member1 <- which.max(bc1)
+
+# Print the result
+cat("The member with the highest betweenness centrality is", highest_bc_member1)
+
+
+
+# Calculate the betweenness centrality
+bc2 <- igraph::betweenness(TwitterNetwork)
+
+# Find the member with the highest betweenness centrality
+highest_bc_member2 <- which.max(bc2)
+
+# Print the result
+cat("The member with the highest betweenness centrality is", highest_bc_member2)
+```
+
+```{r}
+typeof(bc0)
+order(bc0,decreasing = TRUE)[1:10]
+order(bc1,decreasing = TRUE)[1:10]
+order(bc2,decreasing = TRUE)[1:10]
+```
+
+```{r}
+UserNodes[order(bc0,decreasing = TRUE)[1:10],]
+UserNodes[order(bc1,decreasing = TRUE)[1:10],]
+UserNodes[order(bc2,decreasing = TRUE)[1:10],]
+```
+
+
+```{r}
+# Calculate degree centrality
+dc0 <- igraph::degree(FacebookNetwork)
+
+# Calculate betweenness centrality
+bc0 <- igraph::betweenness(FacebookNetwork)
+
+# Create scatter plot
+plot(dc0, bc0, xlab = "Degree Centrality", ylab = "Betweenness Centrality",main = "Correlation of Betweenness Centrality and Degree Centrality  (Facebook)")
+
+#df1_0 <- as.data.frame(dc0)
+#df2_0 <- as.data.frame(bc0)
+
+#df3_0 <- cbind(df1_0, df2_0)
+
+##########
+# Calculate degree centrality
+dc1 <- igraph::degree(InstagramNetwork)
+
+# Calculate betweenness centrality
+bc1 <- igraph::betweenness(InstagramNetwork)
+
+#df1_1 <- as.data.frame(dc1)
+#df2_1 <- as.data.frame(bc1)
+#df3_1 <- cbind(df1_1, df2_1)
+
+# Create scatter plot
+plot(dc1, bc1, xlab = "Degree Centrality", ylab = "Betweenness Centrality",main = "Correlation of Betweenness Centrality and Degree Centrality (Instagram)")
+
+###########
+# Calculate degree centrality
+dc2 <- igraph::degree(TwitterNetwork)
+
+# Calculate betweenness centrality
+bc2 <- igraph::betweenness(TwitterNetwork)
+
+#df1_2 <- as.data.frame(dc2)
+#df2_2 <- as.data.frame(bc2)
+#df3_2 <- cbind(df1_2, df2_2)
+
+# Create scatter plot
+plot(dc2, bc2, xlab = "Degree Centrality", ylab = "Betweenness Centrality",main = "Correlation of Betweenness Centrality and Degree Centrality  (Twitter)")
+```
+
+D.For Florentine Families network:
+1.Which family has the highest level of closeness centrality?
+2.Show a correlation scatter plot of closeness centrality and degree centrality.
+3.In 1-2 sentences, describe why (and if) the highest closeness centrality node might be important to the overall graph structure.
+
+```{r}
+# Calculate the closeness centrality
+cc0 <- igraph::closeness(FacebookNetwork)
+
+# Find the member with the highest closeness centrality
+highest_cc_member0 <- which.max(cc0)
+#FlorentineNodes[highest_cc_member,]
+#highest_cc_member0
+#cat("The family with the highest closeness centrality is", UserNodes[highest_cc_member0,])
+#############################################################################
+# Calculate the closeness centrality
+cc1 <- igraph::closeness(InstagramNetwork)
+
+# Find the member with the highest closeness centrality
+highest_cc_member1 <- which.max(cc1)
+#FlorentineNodes[highest_cc_member,]
+#highest_cc_member1
+#cat("The family with the highest closeness centrality is", UserNodes[highest_cc_member0,])
+##############################################################################
+# Calculate the closeness centrality
+cc2 <- igraph::closeness(TwitterNetwork)
+
+# Find the member with the highest closeness centrality
+highest_cc_member2 <- which.max(cc2)
+#FlorentineNodes[highest_cc_member,]
+#highest_cc_member0
+#cat("The family with the highest closeness centrality is", UserNodes[highest_cc_member0,])
+#############################################################################
+
+
+order(cc0,decreasing = TRUE)[1:10]
+order(cc1,decreasing = TRUE)[1:10]
+order(cc2,decreasing = TRUE)[1:10]
+```
+
+```{r}
+UserNodes[order(cc0,decreasing = TRUE)[1:10],]
+UserNodes[order(cc1,decreasing = TRUE)[1:10],]
+UserNodes[order(cc2,decreasing = TRUE)[1:10],]
+```
+
+```{r}
+# Create scatter plot
+plot(dc0, cc0, xlab = "Degree Centrality", ylab = "Closeness Centrality",main = "Correlation of Closeness Centrality and Degree Centrality (Facebook)")
+##########################
+plot(dc1, cc1, xlab = "Degree Centrality", ylab = "Closeness Centrality",main = "Correlation of Closeness Centrality and Degree Centrality (Instagram)")
+############################
+plot(dc2, cc2, xlab = "Degree Centrality", ylab = "Closeness Centrality",main = "Correlation of Closeness Centrality and Degree Centrality (Twitter)")
+```
+
+```{r}
+# Calculate the number of triangles
+num_triangles <- sum(triangles(FacebookNetwork))/3
+num_triangles 
+```
+
+
+
+####################################################################################################################################
+Ego Network Analysis
+#################################################################
+B. Create the ego network for the highest degree node of each graph and calculate the following: (Do not include ego in the ego network!)
+1.Size of network (node count)
+2.Density
+3.Number of Components
+
+```{r}
+# Find the node with the highest degree
+highest_degree_node_F0 <- which.max(igraph::degree(FacebookNetwork))
+# Create the ego network for the highest degree node
+ego_network_F0 <- make_ego_graph(FacebookNetwork, nodes = highest_degree_node_F0)[[1]]
+# Get the node count of the ego network (excluding the ego node)
+node_count_F0 <- vcount(ego_network_F0) - 1
+# Get the Density of the ego network
+density_F0 <- edge_density(ego_network_F0)
+# Get the Number of Components of the ego network
+count_components_F0 <- count_components(ego_network_F0, mode = c("weak", "strong"))
+
+# Print the node count
+cat("For KarateClubNetwork:",sep = "")
+cat("The node count of the ego network (excluding the ego node) is", node_count_F0)
+cat(". The density of the ego network is", density_F0)
+cat(". The number of the ego network is", count_components_F0)
+```
+```{r}
+UserNodes[highest_degree_node_F0,]
+
+plot(ego_network_F0,vertex.color = "plum",main = "Largest Ego Network in FacebookNetwork", vertex.size = 7,vertex.label.cex=0.7)
+```
+
+
+```{r}
+# Find the node with the highest degree
+highest_degree_node_F1 <- which.max(igraph::degree(InstagramNetwork))
+# Create the ego network for the highest degree node
+ego_network_F1 <- make_ego_graph(InstagramNetwork, nodes = highest_degree_node_F1)[[1]]
+# Get the node count of the ego network (excluding the ego node)
+node_count_F1 <- vcount(ego_network_F1) - 1
+# Get the Density of the ego network
+density_F1 <- edge_density(ego_network_F1)
+# Get the Number of Components of the ego network
+count_components_F1 <- count_components(ego_network_F1, mode = c("weak", "strong"))
+
+# Print the node count
+cat("For KarateClubNetwork:",sep = "")
+cat("The node count of the ego network (excluding the ego node) is", node_count_F1)
+cat(". The density of the ego network is", density_F1)
+cat(". The number of the ego network is", count_components_F1)
+```
+
+```{r}
+UserNodes[highest_degree_node_F1,]
+
+plot(ego_network_F1,vertex.color = "plum",main = "Largest Ego Network in InstagramNetwork", vertex.size = 7,vertex.label.cex=0.7)
+```
+
+```{r}
+# Find the node with the highest degree
+highest_degree_node_F2 <- which.max(igraph::degree(TwitterNetwork))
+# Create the ego network for the highest degree node
+ego_network_F2 <- make_ego_graph(TwitterNetwork, nodes = highest_degree_node_F2)[[1]]
+# Get the node count of the ego network (excluding the ego node)
+node_count_F2 <- vcount(ego_network_F2) - 1
+# Get the Density of the ego network
+density_F2 <- edge_density(ego_network_F2)
+# Get the Number of Components of the ego network
+count_components_F2 <- count_components(ego_network_F2, mode = c("weak", "strong"))
+
+# Print the node count
+cat("For KarateClubNetwork:",sep = "")
+cat("The node count of the ego network (excluding the ego node) is", node_count_F2)
+cat(". The density of the ego network is", density_F2)
+cat(". The number of the ego network is", count_components_F2)
+```
+
+```{r}
+UserNodes[highest_degree_node_F2,]
+
+plot(ego_network_F2,vertex.color = "plum",main = "Largest Ego Network in TwitterNetwork", vertex.size = 7,vertex.label.cex=0.7)
+```
+
+###############################################################################################################
+Race Recognition 
+############################################################################
+
+```{r, warning=FALSE, include=FALSE}
+#install.packages("pak")
+#pak::pkg_install("rethnicity")
+library(rethnicity)
+library(stringr)
+```
+
+```{r}
+UserNodes <- dataFacebook[,c(1:1)]
+names(UserNodes)<-c('V1')  
+```
+
+```{r}
+#remove all trailing whitespace
+UserNodes$clean_V1  <- str_trim(UserNodes$V1, "right")
+
+UserNodes$last_V1 <- word(UserNodes$clean_V1, -1)
+```
+
+```{r}
+predict_ethn <-predict_ethnicity(lastnames = UserNodes$last_V1, method = "lastname")
+predict_ethn
+```
+```{r}
+## prepare the data 
+race_plot <- predict_ethn%>% dplyr::count(race)
+```
+
+```{r}
+# Data
+x <- race_plot$race
+y <- race_plot$n
+
+# Barplot
+bp <- barplot(y, names.arg = x, ylim = c(0, max(y)*1.2), col = "plum",xlab = "Race", ylab = "Number", main = "Race Prediction for the 1,000 users")
+
+# Add text to the bars
+text(x = bp, y = y, labels = y, pos = 3)
+```
+
+#########################################################################################
+Visualize the network with race
+####################################################################################
+
+```{r}
+# Find the node with the highest degree
+highest_degree_node_F0 <- which.max(igraph::degree(FacebookNetwork))
+# Create the ego network for the highest degree node
+ego_network_F0 <- make_ego_graph(FacebookNetwork, nodes = highest_degree_node_F0)[[1]]
+```
+
+```{r}
+library(igraph)
+```
+
+
+```{r}
+node_names <- nodes(ego_network_F0)$name
+```
+
+```{r}
+plot(ego_network_F1_updated, vertex.col=V(ego_network_F1_updated)$Race,vertex.color = "plum",main = "Largest Ego Network in FacebookNetwork", vertex.size = 7,vertex.label.cex=0.7)
+```
+
+```{r}
+# Find the node with the highest degree
+highest_degree_node_F1 <- which.max(igraph::degree(InstagramNetwork))
+# Create the ego network for the highest degree node
+ego_network_F1 <- make_ego_graph(InstagramNetwork, nodes = highest_degree_node_F1)[[1]]
+
+```
+
+
+
+#######################################################################################################
+ERGM Estimate 
+##########################################################################################################
+
+```{r}
+library(network)
+```
+
+```{r}
+V(FacebookNetwork)$Race = predict_ethn$race
+V(InstagramNetwork)$Race = predict_ethn$race
+V(TwitterNetwork)$Race = predict_ethn$race
+```
+
+```{r, warning=FALSE}
+## ERGM Estimate 
+ERGM_facebook <- ergm(asNetwork(FacebookNetwork)~edges+nodematch('Race')+nodefactor('Race'))
+summary(ERGM_facebook)
+```
+
+```{r}
+## ERGM Estimate 
+ERGM_Instagram <- ergm(asNetwork(InstagramNetwork)~edges+nodematch('Race')+nodefactor('Race'))
+summary(ERGM_Instagram)
+```
+
+```{r}
+## ERGM Estimate 
+ERGM_Twitter <- ergm(asNetwork(TwitterNetwork)~edges+nodematch('Race')+nodefactor('Race'))
+summary(ERGM_Twitter)
+```
+
+
+
+
